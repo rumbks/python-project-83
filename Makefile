@@ -1,9 +1,13 @@
+install-poetry:
+	pip install poetry
+
 install:
 	poetry install
 
-build:
-	pip install poetry
-	poetry install
+init-db:
+	psql $(DATABASE_URL) < database.sql
+
+build: install-poetry install init-db
 
 tests:
 	poetry run pytest -vv tests

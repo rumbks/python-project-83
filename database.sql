@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
+  id bigint PRIMARY KEY,
+  name VARCHAR(255) UNIQUE NOT NULL,
+  created_at TIMESTAMP NOT NULL
+);
