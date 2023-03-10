@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS users;
-CREATE TABLE users (
-  id bigint PRIMARY KEY,
+DROP TABLE IF EXISTS urls;
+CREATE TABLE urls (
+  id SERIAL PRIMARY KEY ,
   name VARCHAR(255) UNIQUE NOT NULL,
-  created_at TIMESTAMP NOT NULL
+  created_at TIMESTAMP DEFAULT current_timestamp
 );
