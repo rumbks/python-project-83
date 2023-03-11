@@ -26,7 +26,8 @@ def main():
 @app.route("/urls", methods=['GET', 'POST'])
 def urls():
     if request.method == 'GET':
-        return render_template('urls.html')
+        urls = db.entities.url.get_all()
+        return render_template('urls.html', urls=urls)
     url_name = request.form['url']
     if (url := db.entities.url.get_by_name(url_name)) is not None:
         flash.info('Страница уже существует')
