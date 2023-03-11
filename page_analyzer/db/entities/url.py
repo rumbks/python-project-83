@@ -7,12 +7,14 @@ from page_analyzer.db import connection
 from psycopg2 import sql
 
 
-def _get(*, url_id: Optional[int] = None, name: Optional[str] = None) -> models.Url:
+def _get(
+    *, url_id: Optional[int] = None, name: Optional[str] = None
+) -> Optional[models.Url]:
     if url_id is not None:
-        where_field = sql.Identifier('id')
+        where_field = 'id'
         where_value = url_id
     elif name is not None:
-        where_field = sql.Identifier('name')
+        where_field = 'name'
         where_value = name
     else:
         raise ValueError("Neither url id nor url name was provided")
@@ -21,12 +23,17 @@ def _get(*, url_id: Optional[int] = None, name: Optional[str] = None) -> models.
     )
     cursor = connection.get_cursor()
     cursor.execute(query, (where_value,))
-    return models.Url(*cursor.fetchone())
+    if (fields := cursor.fetchone()) is None:
+        return None
+    return models.Url(*fields)
 
 
 def get_by_id(url_id: int) -> models.Url:
     return _get(url_id=url_id)
-    pass
+
+
+def get_by_name(name: str) -> models.Url:
+    return _get(name=name)
 
 
 def create(name: str) -> models.Url:
@@ -35,6 +42,5 @@ def create(name: str) -> models.Url:
         cursor = connection.get_cursor()
         cursor.execute("INSERT INTO urls(name) VALUES (%s) RETURNING *", (name,))
         connection.commit()
-        url_id, name, created_at = cursor.fetchone()
-        url = models.Url(url_id, name, created_at)
+        url = models.Url(*cursor.fetchone())
     return url
