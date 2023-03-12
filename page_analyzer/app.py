@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
+import requests
 
 from page_analyzer import db
 from page_analyzer.environ import env
@@ -52,7 +53,17 @@ def url(url_id):
 
 @app.post("/urls/<int:url_id>/checks", endpoint='check_url')
 def check_url(url_id):
-    db.entities.url_check.create_for_url(url_id, status_code=200)
+    url = db.entities.url.get_by_id(url_id)
+    try:
+        response = requests.get(url.name)
+        response.raise_for_status()
+    except requests.RequestException:
+        flash.error('Произошла ошибка при проверке')
+        return redirect(url_for('url', url_id=url_id))
+
+    status_code = requests.get(url.name).status_code
+    db.entities.url_check.create_for_url(url_id, status_code=status_code)
+    flash.success('Страница успешно проверена')
     return redirect(url_for('url', url_id=url_id))
 
 
