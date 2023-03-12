@@ -5,8 +5,8 @@ install:
 	poetry install
 
 init-db:
-	echo $DATABASE_URL
-	psql $DATABASE_URL < database.sql
+	echo $(DATABASE_URL)
+	psql $(DATABASE_URL) < database.sql
 
 build: install-poetry install init-db
 
