@@ -4,8 +4,6 @@ from page_analyzer import entities
 
 from page_analyzer.db import connection
 
-from psycopg2 import sql
-
 
 def _get(
     *, url_id: Optional[int] = None, name: Optional[str] = None

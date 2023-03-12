@@ -45,5 +45,14 @@ def urls():
 
 @app.get("/urls/<int:url_id>", endpoint='url')
 def url(url_id):
-    url = db.entities.url.get_by_id(url_id)
-    return render_template('url.html', url=url)
+    url_ = db.entities.url.get_by_id(url_id)
+    url_checks = db.entities.url_check.get_all_for_url(url_.id)
+    return render_template('url.html', url=url_, url_checks=url_checks)
+
+
+@app.post("/urls/<int:url_id>/checks", endpoint='check_url')
+def check_url(url_id):
+    db.entities.url_check.create_for_url(url_id, status_code=200)
+    return redirect(url_for('url', url_id=url_id))
+
+
