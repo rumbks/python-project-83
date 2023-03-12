@@ -6,6 +6,7 @@ from page_analyzer.environ import env
 from page_analyzer import flash
 from page_analyzer import filters
 from page_analyzer.url import is_valid as is_valid_url, normalize
+from page_analyzer import html
 
 
 def create_app() -> Flask:
@@ -13,7 +14,7 @@ def create_app() -> Flask:
     app = Flask(__name__)
     filters.setup(app)
     db.connection.setup(app)
-    app.secret_key = env("SECRET_KEY")
+    app.secret_key = env("SECRET_KEY", 'secret')
     return app
 
 
@@ -61,8 +62,11 @@ def check_url(url_id):
         flash.error('Произошла ошибка при проверке')
         return redirect(url_for('url', url_id=url_id))
 
-    status_code = requests.get(url.name).status_code
-    db.entities.url_check.create_for_url(url_id, status_code=status_code)
+    parsed_page = html.parse(response.text)
+    tags_values = html.analyze(parsed_page)
+    db.entities.url_check.create_for_url(
+        url_id, status_code=response.status_code, **tags_values.to_dict()
+    )
     flash.success('Страница успешно проверена')
     return redirect(url_for('url', url_id=url_id))
 
