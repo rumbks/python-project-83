@@ -10,6 +10,7 @@ init-db:
 
 build: install-poetry install init-db
 
+
 tests:
 	poetry run pytest -vv tests
 
