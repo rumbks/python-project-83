@@ -36,8 +36,24 @@ def get_by_name(name: str) -> entities.Url:
 
 def get_all() -> List[entities.Url]:
     cursor = connection.get_cursor()
-    cursor.execute("SELECT id, name, DATE(created_at) FROM urls")
-    return [entities.Url(*columns) for columns in cursor.fetchall()]
+    cursor.execute(
+        "WITH most_recent_checks AS "
+        "(SELECT * FROM (SELECT DISTINCT ON (url_id) * FROM url_checks "
+        "ORDER BY url_id, created_at DESC) t ORDER BY id)"
+        "SELECT * FROM urls LEFT JOIN most_recent_checks ON "
+        "urls.id=most_recent_checks.url_id ORDER BY urls.id DESC"
+    )
+    urls = []
+    for row in cursor.fetchall():
+        id_, name, created_at, *url_check_fields = row
+        url_check = (
+            None
+            if all(field is None for field in url_check_fields)
+            else entities.UrlCheck(*url_check_fields)
+        )
+        urls.append(entities.Url(id_, name, created_at, url_check))
+
+    return urls
 
 
 def create(name: str) -> entities.Url:

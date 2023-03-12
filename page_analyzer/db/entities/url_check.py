@@ -10,7 +10,7 @@ def get_all_for_url(url_id: int) -> List[entities.Url]:
     cursor = connection.get_cursor()
     cursor.execute(
         "SELECT id, url_id, status_code, h1, title, description, DATE(created_at) "
-        "FROM url_checks WHERE url_id=(%s)",
+        "FROM url_checks WHERE url_id=(%s) ORDER BY id DESC",
         (url_id,),
     )
     return [entities.UrlCheck(*columns) for columns in cursor.fetchall()]
