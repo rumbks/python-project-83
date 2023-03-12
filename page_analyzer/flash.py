@@ -8,7 +8,7 @@ def info(message: str) -> None:
 
 
 def error(message: str) -> None:
-    flash(message, 'error')
+    flash(message, 'danger')
 
 
 def success(message: str) -> None:
