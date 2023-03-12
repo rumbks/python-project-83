@@ -60,7 +60,9 @@ def create(name: str) -> entities.Url:
     url = _get(name=name)
     if url is None:
         cursor = connection.get_cursor()
-        cursor.execute("INSERT INTO urls(name) VALUES (%s) RETURNING *", (name,))
+        cursor.execute(
+            "INSERT INTO urls(name) VALUES (%s) RETURNING *", (name,)
+        )
         connection.commit()
         url = entities.Url(*cursor.fetchone())
     return url

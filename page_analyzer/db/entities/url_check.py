@@ -6,10 +6,11 @@ from page_analyzer import entities
 from page_analyzer.db import connection
 
 
-def get_all_for_url(url_id: int) -> List[entities.Url]:
+def get_all_for_url(url_id: int) -> List[entities.UrlCheck]:
     cursor = connection.get_cursor()
     cursor.execute(
-        "SELECT id, url_id, status_code, h1, title, description, DATE(created_at) "
+        "SELECT id, url_id, status_code, "
+        "h1, title, description, DATE(created_at) "
         "FROM url_checks WHERE url_id=(%s) ORDER BY id DESC",
         (url_id,),
     )
@@ -21,9 +22,12 @@ def create_for_url(url_id: int, **fields) -> entities.UrlCheck:
     fields = defaultdict(lambda: None, fields)
     fields['url_id'] = url_id
     cursor.execute(
-        "INSERT INTO url_checks(url_id, status_code, h1, title, description) "
-        "VALUES (%(url_id)s, %(status_code)s, %(h1)s, %(title)s, %(description)s) "
-        "RETURNING id, url_id, status_code, h1, title, description, DATE(created_at)",
+        "INSERT INTO "
+        "url_checks(url_id, status_code, h1, title, description) "
+        "VALUES (%(url_id)s, %(status_code)s, "
+        "%(h1)s, %(title)s, %(description)s) "
+        "RETURNING id, url_id, status_code, h1, "
+        "title, description, DATE(created_at)",
         fields,
     )
     connection.commit()

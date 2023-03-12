@@ -69,5 +69,3 @@ def check_url(url_id):
     )
     flash.success('Страница успешно проверена')
     return redirect(url_for('url', url_id=url_id))
-
-
