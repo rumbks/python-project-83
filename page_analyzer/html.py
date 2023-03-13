@@ -19,7 +19,7 @@ class AnalysisResult:
 
 def analyze(parsed_page: BeautifulSoup) -> AnalysisResult:
     h1 = getattr(parsed_page.find('h1'), 'text', None)
-    title = getattr(parsed_page.find('h1'), 'text', None)
+    title = getattr(parsed_page.find('title'), 'text', None)
     description = parsed_page.find('meta', {'name': 'description'})
     description = description['content'] if description else None
     return AnalysisResult(h1, title, description)
