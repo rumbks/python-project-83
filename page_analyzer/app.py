@@ -34,7 +34,7 @@ def urls():
     url_name = request.form['url']
     if not is_valid_url(url_name):
         flash.error('Некорректный URL')
-        return render_template('main.html', url_name=url_name)
+        return render_template('main.html', url_name=url_name), 422
 
     url_name = normalize(url_name)
     if (url := db.entities.url.get_by_name(url_name)) is not None:
@@ -42,7 +42,7 @@ def urls():
     else:
         url = db.entities.url.create(url_name)
         flash.success('Страница успешно добавлена')
-    return render_template('url.html', url=url)
+    return redirect(url_for('url', url_id=url.id))
 
 
 @app.get("/urls/<int:url_id>", endpoint='url')
